@@ -101,7 +101,7 @@
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 26px;
     padding: 30px 26px 26px;
-    max-width: 320px;
+    max-width: 360px;
     width: 100%;
     text-align: center;
     box-shadow:
@@ -137,12 +137,18 @@
     align-items: center;
     justify-content: center;
     padding: 0;
+    cursor: pointer;
   }
 
-  .lock-icon {
+  /* Header del pago */
+  .payment-header {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .payment-header .lock-icon {
     width: 46px;
     height: 46px;
-    margin: 0 auto 16px;
+    margin: 0 auto 12px;
     border-radius: 50%;
     background: rgba(255,183,0,0.14);
     border: 1px solid rgba(255,183,0,0.3);
@@ -150,23 +156,84 @@
     align-items: center;
     justify-content: center;
   }
-  .lock-icon svg { width: 22px; height: 22px; stroke: #ffb700; fill: none; stroke-width: 2; }
-
-  .modal h2 { font-size: 1.15rem; margin: 0 0 8px; font-weight: 700; position: relative; }
-  .modal p.desc { font-size: 0.86rem; color: #c7c7cb; line-height: 1.45; margin: 0 0 22px; position: relative; }
-
-  .price-row {
+  .payment-header .lock-icon svg { width: 22px; height: 22px; stroke: #ffb700; fill: none; stroke-width: 2; }
+  .payment-header h2 { font-size: 1.1rem; margin: 0 0 6px; font-weight: 700; position: relative; color: #fff; }
+  .payment-header .price-row {
     display: flex;
     align-items: baseline;
     justify-content: center;
     gap: 6px;
-    margin-bottom: 22px;
     position: relative;
   }
-  .price-row .amount { font-size: 2.1rem; font-weight: 800; color: #ffd257; }
-  .price-row .period { font-size: 0.82rem; color: #9a9a9e; }
+  .payment-header .price-row .amount { font-size: 2.2rem; font-weight: 800; color: #ffd257; }
+  .payment-header .price-row .period { font-size: 0.85rem; color: #9a9a9e; font-weight: 500; }
 
-  .modal-buttons { display: flex; flex-direction: column; gap: 10px; position: relative; }
+  /* Formulario */
+  .payment-form {
+    position: relative;
+    text-align: left;
+  }
+  .form-group {
+    margin-bottom: 14px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #b8b8bc;
+    margin-bottom: 5px;
+    padding-left: 2px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: rgba(0,0,0,0.25);
+    color: #f2f2f2;
+    font-size: 0.95rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .form-group input::placeholder { color: #6a6a6e; }
+  .form-group input:focus {
+    border-color: rgba(255,183,0,0.6);
+    box-shadow: 0 0 0 3px rgba(255,183,0,0.1);
+  }
+  .form-group input.error {
+    border-color: #ff6b6b;
+    box-shadow: 0 0 0 3px rgba(255,107,107,0.15);
+  }
+  .form-row {
+    display: flex;
+    gap: 12px;
+  }
+  .form-row .form-group {
+    flex: 1;
+    margin-bottom: 0;
+  }
+
+  .error-msg {
+    font-size: 0.75rem;
+    color: #ff6b6b;
+    margin-top: 4px;
+    min-height: 0;
+    display: none;
+  }
+  .error-msg.show { display: block; }
+
+  .msg-line {
+    min-height: 18px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-bottom: 14px;
+    position: relative;
+    text-align: center;
+  }
+  .msg-line.declined { color: #ff6b6b; }
+  .msg-line.success { color: #5fd87d; }
+
   #payBtn {
     background: linear-gradient(180deg, #ffcf4d, #ffb700);
     color: #1a1400;
@@ -178,6 +245,10 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    border: none;
+    cursor: pointer;
   }
   #cancelBtn {
     background: rgba(255,255,255,0.06);
@@ -188,24 +259,16 @@
     border-radius: 14px;
     font-weight: 600;
     font-size: 0.85rem;
+    margin-top: 10px;
+    cursor: pointer;
   }
 
   .fine-print {
-    margin-top: 16px;
+    margin-top: 14px;
     font-size: 0.7rem;
     color: #7a7a7e;
     position: relative;
   }
-
-  .msg-line {
-    min-height: 18px;
-    font-size: 0.78rem;
-    font-weight: 600;
-    margin-bottom: 14px;
-    position: relative;
-  }
-  .msg-line.declined { color: #ff6b6b; }
-  .msg-line.success { color: #5fd87d; }
 
   .spinner {
     width: 16px;
@@ -217,6 +280,29 @@
     display: inline-block;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Pantalla de exito */
+  .success-screen {
+    display: none;
+    position: relative;
+    text-align: center;
+    padding: 10px 0;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(95,216,125,0.15);
+    border: 1px solid rgba(95,216,125,0.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .success-icon svg { width: 28px; height: 28px; stroke: #5fd87d; fill: none; stroke-width: 2.5; }
+  .success-screen h2 { font-size: 1.3rem; margin: 0 0 8px; font-weight: 700; color: #5fd87d; }
+  .success-screen p { font-size: 0.9rem; color: #c7c7cb; margin: 0 0 20px; }
 </style>
 </head>
 <body>
@@ -239,28 +325,69 @@
 <div class="overlay" id="overlay">
   <div class="modal">
     <button class="close-x" id="cancelBtn2" aria-label="Cerrar">&#10005;</button>
-    <div class="lock-icon">
-      <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+
+    <!-- Formulario de pago -->
+    <div id="paymentFormContainer">
+      <div class="payment-header">
+        <div class="lock-icon">
+          <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        </div>
+        <h2>Pago con Tarjeta</h2>
+        <div class="price-row">
+          <span class="amount">$50</span>
+          <span class="period">USD &middot; Pago Único</span>
+        </div>
+      </div>
+
+      <form class="payment-form" id="paymentForm" novalidate>
+        <div class="form-group">
+          <label for="cardHolder">Titular de la tarjeta</label>
+          <input type="text" id="cardHolder" placeholder="NOMBRE APELLIDO" autocomplete="off">
+          <div class="error-msg" id="errHolder">Completa el nombre del titular.</div>
+        </div>
+
+        <div class="form-group">
+          <label for="cardNumber">Número de tarjeta</label>
+          <input type="text" id="cardNumber" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="off" inputmode="numeric">
+          <div class="error-msg" id="errNumber">Ingresa el número de tarjeta.</div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cardExp">Expiración</label>
+            <input type="text" id="cardExp" placeholder="MM/AA" maxlength="5" autocomplete="off" inputmode="numeric">
+            <div class="error-msg" id="errExp">Ingresa la fecha.</div>
+          </div>
+          <div class="form-group">
+            <label for="cardCvv">Código de seguridad</label>
+            <input type="text" id="cardCvv" placeholder="CVV" maxlength="4" autocomplete="off" inputmode="numeric">
+            <div class="error-msg" id="errCvv">Ingresa el CVV.</div>
+          </div>
+        </div>
+
+        <div class="msg-line" id="msgLine"></div>
+
+        <button type="submit" id="payBtn"><span id="payBtnText">Procesar Pago</span></button>
+        <button type="button" id="cancelBtn">Cancelar</button>
+      </form>
+
+      <div class="fine-print">Pago seguro &middot; procesado una sola vez</div>
     </div>
-    <h2>Desbloquea el apagado</h2>
-    <p class="desc">Encender es gratuito. Apagar la linterna requiere una actualización Premium con pago único.</p>
-    <div class="price-row">
-      <span class="amount">$50</span>
-      <span class="period">USD &middot; pago único</span>
+
+    <!-- Pantalla de éxito -->
+    <div class="success-screen" id="successScreen">
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <h2>¡Pago Exitoso!</h2>
+      <p>Tu transacción fue procesada correctamente.</p>
     </div>
-    <div class="msg-line" id="msgLine"></div>
-    <div class="modal-buttons">
-      <button id="payBtn"><span id="payBtnText">Confirmar pago</span></button>
-      <button id="cancelBtn">Cancelar</button>
-    </div>
-    <div class="fine-print">Pago seguro &middot; procesado una sola vez</div>
   </div>
 </div>
 
 <script>
 let track = null;
 let isOn = false;
-let payAttempts = 0;
 let processing = false;
 
 const body = document.body;
@@ -274,6 +401,14 @@ const payBtnText = document.getElementById('payBtnText');
 const cancelBtn = document.getElementById('cancelBtn');
 const cancelBtn2 = document.getElementById('cancelBtn2');
 const msgLine = document.getElementById('msgLine');
+const paymentFormContainer = document.getElementById('paymentFormContainer');
+const successScreen = document.getElementById('successScreen');
+const paymentForm = document.getElementById('paymentForm');
+
+const cardHolder = document.getElementById('cardHolder');
+const cardNumber = document.getElementById('cardNumber');
+const cardExp = document.getElementById('cardExp');
+const cardCvv = document.getElementById('cardCvv');
 
 async function initCamera() {
   try {
@@ -303,16 +438,30 @@ async function setTorch(state) {
   status.textContent = state ? 'Linterna encendida.' : 'Linterna apagada.';
 }
 
-function openModal() {
+function resetForm() {
+  paymentForm.reset();
+  [cardHolder, cardNumber, cardExp, cardCvv].forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
   msgLine.textContent = '';
   msgLine.className = 'msg-line';
-  payBtnText.textContent = 'Confirmar pago';
+  payBtnText.textContent = 'Procesar Pago';
   payBtn.disabled = false;
+  cancelBtn.disabled = false;
+}
+
+function openModal() {
+  resetForm();
+  paymentFormContainer.style.display = 'block';
+  successScreen.classList.remove('show');
   overlay.classList.add('show');
 }
 
 function closeModal() {
   overlay.classList.remove('show');
+  setTimeout(() => {
+    paymentFormContainer.style.display = 'block';
+    successScreen.classList.remove('show');
+  }, 300);
 }
 
 onBtn.addEventListener('click', async () => {
@@ -339,13 +488,65 @@ offBtn.addEventListener('click', () => {
   openModal();
 });
 
-const declineMessages = [
-  'Pago rechazado por tu banco. Intenta de nuevo.',
-  'No se pudo procesar el pago. Verifica tu método e intenta otra vez.'
-];
+// Formato automático de número de tarjeta
+cardNumber.addEventListener('input', (e) => {
+  let val = e.target.value.replace(/\D/g, '');
+  val = val.substring(0, 16);
+  const parts = val.match(/.{1,4}/g);
+  e.target.value = parts ? parts.join(' ') : val;
+});
 
-payBtn.addEventListener('click', () => {
+// Formato automático de fecha
+cardExp.addEventListener('input', (e) => {
+  let val = e.target.value.replace(/\D/g, '');
+  val = val.substring(0, 4);
+  if (val.length >= 3) {
+    e.target.value = val.substring(0, 2) + '/' + val.substring(2);
+  } else {
+    e.target.value = val;
+  }
+});
+
+// Solo números en CVV
+cardCvv.addEventListener('input', (e) => {
+  e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+});
+
+function validateForm() {
+  let valid = true;
+  [cardHolder, cardNumber, cardExp, cardCvv].forEach(el => el.classList.remove('error'));
+  document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+
+  if (!cardHolder.value.trim()) {
+    cardHolder.classList.add('error');
+    document.getElementById('errHolder').classList.add('show');
+    valid = false;
+  }
+  if (!cardNumber.value.trim()) {
+    cardNumber.classList.add('error');
+    document.getElementById('errNumber').classList.add('show');
+    valid = false;
+  }
+  if (!cardExp.value.trim()) {
+    cardExp.classList.add('error');
+    document.getElementById('errExp').classList.add('show');
+    valid = false;
+  }
+  if (!cardCvv.value.trim()) {
+    cardCvv.classList.add('error');
+    document.getElementById('errCvv').classList.add('show');
+    valid = false;
+  }
+
+  return valid;
+}
+
+paymentForm.addEventListener('submit', (e) => {
+  e.preventDefault();
   if (processing) return;
+
+  if (!validateForm()) return;
+
   processing = true;
   payBtn.disabled = true;
   cancelBtn.disabled = true;
@@ -354,31 +555,19 @@ payBtn.addEventListener('click', () => {
   msgLine.className = 'msg-line';
 
   setTimeout(() => {
-    payAttempts++;
+    processing = false;
+    paymentFormContainer.style.display = 'none';
+    successScreen.classList.add('show');
 
-    if (payAttempts < 3) {
-      msgLine.textContent = declineMessages[payAttempts - 1];
-      msgLine.className = 'msg-line declined';
-      payBtnText.textContent = 'Reintentar pago';
-      payBtn.disabled = false;
-      cancelBtn.disabled = false;
-      processing = false;
-    } else {
-      msgLine.textContent = 'Pago aprobado.';
-      msgLine.className = 'msg-line success';
-      payBtnText.textContent = 'Listo';
-      setTimeout(async () => {
-        closeModal();
-        payAttempts = 0;
-        processing = false;
-        try {
-          await setTorch(false);
-        } catch (err) {
-          status.textContent = 'Error al apagar: ' + err.message;
-        }
-      }, 700);
-    }
-  }, 1200);
+    setTimeout(async () => {
+      closeModal();
+      try {
+        await setTorch(false);
+      } catch (err) {
+        status.textContent = 'Error al apagar: ' + err.message;
+      }
+    }, 1800);
+  }, 1500);
 });
 
 function cancelModal() {
