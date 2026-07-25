@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linterna</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #0a0a0c;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: #f2f2f2;
+    padding: 24px;
+    text-align: center;
+    transition: background 0.3s ease;
+  }
+  body.lit { background: #17140a; }
+
+  .icon-wrap {
+    width: 140px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+  }
+  #flashlightIcon {
+    width: 90px;
+    height: 90px;
+    stroke: #6b6b70;
+    fill: none;
+    stroke-width: 1.5;
+    transition: all 0.3s ease;
+  }
+  #flashlightIcon.on {
+    stroke: #ffb700;
+    filter: drop-shadow(0 0 18px rgba(255, 183, 0, 0.7));
+  }
+
+  #status {
+    margin-bottom: 32px;
+    font-size: 0.85rem;
+    color: #8a8a8e;
+    max-width: 300px;
+    min-height: 1.2em;
+  }
+
+  .buttons {
+    display: flex;
+    gap: 16px;
+  }
+  button {
+    border: none;
+    border-radius: 12px;
+    padding: 16px 28px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.15s ease, opacity 0.15s ease;
+  }
+  button:active { transform: scale(0.96); }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  #onBtn {
+    background: #ffb700;
+    color: #1a1a1a;
+  }
+  #offBtn {
+    background: #000;
+    color: #f2f2f2;
+    border: 1px solid #333;
+  }
+
+  /* Modal */
+  .overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 10;
+  }
+  .overlay.show { display: flex; }
+  .modal {
+    background: #17171a;
+    border: 1px solid #2a2a2e;
+    border-radius: 16px;
+    padding: 28px 24px;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal .badge {
+    display: inline-block;
+    background: #ffb700;
+    color: #1a1a1a;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+  .modal h2 { font-size: 1.1rem; margin: 0 0 10px; }
+  .modal p { font-size: 0.88rem; color: #b0b0b3; line-height: 1.4; margin: 0 0 20px; }
+  .modal .price { font-size: 2rem; font-weight: 800; color: #ffb700; margin-bottom: 20px; }
+  .modal .price span { font-size: 1rem; color: #8a8a8e; font-weight: 500; }
+  .modal-buttons { display: flex; flex-direction: column; gap: 10px; }
+  #payBtn {
+    background: #ffb700;
+    color: #1a1a1a;
+    width: 100%;
+    padding: 14px;
+  }
+  #joke-close {
+    background: transparent;
+    color: #6b6b70;
+    width: 100%;
+    padding: 10px;
+    font-weight: 500;
+    font-size: 0.8rem;
+  }
+</style>
+</head>
+<body>
+
+<div class="icon-wrap">
+  <svg id="flashlightIcon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+    <path d="M20 8 H44 L40 22 H24 Z" stroke-linejoin="round"/>
+    <path d="M24 22 H40 V30 L34 36 V56 H30 V36 L24 30 Z" stroke-linejoin="round"/>
+    <line x1="32" y1="2" x2="32" y2="8"/>
+  </svg>
+</div>
+
+<div id="status">Toca "Encender" para activar la linterna.</div>
+
+<div class="buttons">
+  <button id="onBtn">Encender</button>
+  <button id="offBtn">Apagar</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal">
+    <span class="badge">Función Premium</span>
+    <h2>¿Ya la quieres apagar?</h2>
+    <p>Encenderla fue gratis, pero apagarla es una función premium. Actualiza para desbloquear el botón de apagado.</p>
+    <div class="price">$50<span>.00 pago único</span></div>
+    <div class="modal-buttons">
+      <button id="payBtn">Pagar $50 y apagar</button>
+      <button id="joke-close">Es broma, apagar gratis 😄</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let track = null;
+let isOn = false;
+const body = document.body;
+const icon = document.getElementById('flashlightIcon');
+const status = document.getElementById('status');
+const onBtn = document.getElementById('onBtn');
+const offBtn = document.getElementById('offBtn');
+const overlay = document.getElementById('overlay');
+const payBtn = document.getElementById('payBtn');
+const jokeClose = document.getElementById('joke-close');
+
+async function initCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { ideal: 'environment' } }
+    });
+    track = stream.getVideoTracks()[0];
+    const capabilities = track.getCapabilities ? track.getCapabilities() : {};
+    if (!capabilities.torch) {
+      status.textContent = 'Este dispositivo o navegador no soporta el control del flash (prueba con Android + Chrome).';
+      onBtn.disabled = true;
+      return false;
+    }
+    return true;
+  } catch (err) {
+    status.textContent = 'No se pudo acceder a la cámara: ' + err.message;
+    onBtn.disabled = true;
+    return false;
+  }
+}
+
+async function setTorch(state) {
+  await track.applyConstraints({ advanced: [{ torch: state }] });
+  isOn = state;
+  icon.classList.toggle('on', state);
+  body.classList.toggle('lit', state);
+  status.textContent = state ? 'Linterna encendida.' : 'Linterna apagada.';
+}
+
+onBtn.addEventListener('click', async () => {
+  if (!track) {
+    onBtn.disabled = true;
+    onBtn.textContent = '...';
+    const ok = await initCamera();
+    onBtn.disabled = false;
+    onBtn.textContent = 'Encender';
+    if (!ok) return;
+  }
+  try {
+    await setTorch(true);
+  } catch (err) {
+    status.textContent = 'Error al encender: ' + err.message;
+  }
+});
+
+offBtn.addEventListener('click', () => {
+  if (!isOn) {
+    status.textContent = 'La linterna ya está apagada.';
+    return;
+  }
+  overlay.classList.add('show');
+});
+
+payBtn.addEventListener('click', () => {
+  // Es una broma: no se procesa ningún pago real.
+  payBtn.textContent = 'Procesando... 🙃';
+  setTimeout(() => {
+    overlay.classList.remove('show');
+    payBtn.textContent = 'Pagar $50 y apagar';
+    setTorch(false);
+    status.textContent = 'Jaja, era broma. No se cobró nada. Linterna apagada.';
+  }, 900);
+});
+
+jokeClose.addEventListener('click', async () => {
+  overlay.classList.remove('show');
+  try {
+    await setTorch(false);
+  } catch (err) {
+    status.textContent = 'Error al apagar: ' + err.message;
+  }
+});
+</script>
+
+</body>
+</html>
